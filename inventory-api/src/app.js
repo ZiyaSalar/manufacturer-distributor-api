@@ -1,7 +1,9 @@
 const express = require('express');
+const cors = require('cors');
 const inventoryRouter = require('./routes/inventory');
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.get('/health', (req, res) => {
