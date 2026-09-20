@@ -1,9 +1,20 @@
 const express = require('express');
 const { sql, getPool } = require('../db');
+const { uploadFile } = require('../blobstorage');
+const multer = require('multer');
+
 const router = express.Router();
 
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { 
+    fileSize: 10 * 1024 * 1024 
+  } // limit file size to 10MB
+});
+
+
 // POST /products — create a new medicine
-router.post('/', async (req, res) => {
+router.post('/', upload.single('productDocument'), async (req, res) => {
   const { medicineCode, medicineName, manufacturerId, status } = req.body;
 
   if (!medicineCode || !medicineName || !manufacturerId) {
@@ -13,18 +24,32 @@ router.post('/', async (req, res) => {
   }
 
   try {
+
+    // upload product doucment to Azure Blob Storage 
+    const blobFileName = `${medicineCode}-${req.file.originalname}`;
+    let documentUrl = null;
+    if(req.file){
+      documentUrl = await uploadFile(
+        req.file.buffer,
+        blobFileName,
+        req.file.mimetype
+      );
+    }
+
+    // connect to the database and insert the new product
     const pool = await getPool();
     await pool.request()
       .input('medicineCode', sql.VarChar, medicineCode)
       .input('medicineName', sql.VarChar, medicineName)
       .input('manufacturerId', sql.VarChar, manufacturerId)
       .input('status', sql.VarChar, status || 'ACTIVE')
+      .input('documentUrl', sql.VarChar, documentUrl)
       .query(`
-        INSERT INTO ProductMaster (MedicineCode, MedicineName, ManufacturerId, Status)
-        VALUES (@medicineCode, @medicineName, @manufacturerId, @status)
+        INSERT INTO ProductMaster (MedicineCode, MedicineName, ManufacturerId, Status, DocumentUrl)
+        VALUES (@medicineCode, @medicineName, @manufacturerId, @status, @documentUrl)
       `);
 
-    res.status(201).json({ medicineCode, medicineName, manufacturerId, status: status || 'ACTIVE' });
+    res.status(201).json({ medicineCode, medicineName, manufacturerId, status: status || 'ACTIVE' , documentUrl});
   } catch (err) {
     if (err.number === 2627) {
       // SQL Server's duplicate primary key error code
