@@ -57,3 +57,13 @@ output "apim_gateway_url" {
 output "application_insights_name" {
   value = azurerm_application_insights.main.name
 }
+
+output "sql_admin_username" {
+  value = var.sql_admin_username
+  sensitive = true
+}
+
+output "sql_admin_password" {
+  value     = random_password.sql_admin.result
+  sensitive = true
+}

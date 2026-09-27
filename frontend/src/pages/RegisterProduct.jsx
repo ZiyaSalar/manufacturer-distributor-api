@@ -8,6 +8,7 @@ import {
   Building2,
   ArrowRight,
   X,
+  FileText,
 } from "lucide-react";
 
 import PageHeader from "../components/PageHeader";
@@ -43,6 +44,9 @@ function RegisterProduct() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(null);
+
+  // Product document upload state
+  const [file, setFile] = useState(null);
 
   // Register new manufacturer modal state
   const [showManufacturerModal, setShowManufacturerModal] = useState(false);
@@ -117,7 +121,7 @@ function RegisterProduct() {
     setSubmitting(true);
 
     try {
-      await createProduct(form);
+      await createProduct(form, file);
 
       setSubmitSuccess(
         `Product ${form.medicineCode} registered successfully.`
@@ -129,6 +133,7 @@ function RegisterProduct() {
         manufacturerId: "",
       });
 
+      setFile(null);
       setFormErrors({});
 
       if (showProducts) {
@@ -224,6 +229,10 @@ function RegisterProduct() {
     if (next) {
       loadProducts();
     }
+  }
+
+  function handleFileChange(e) {
+    setFile(e.target.files[0] || null);
   }
 
   function handleProductChange(field, value) {
@@ -474,6 +483,47 @@ function RegisterProduct() {
                   <Plus size={14} />
                   Register a new manufacturer
                 </button>
+              </div>
+
+              {/* Product Document Upload */}
+              <div className="md:col-span-2">
+                <label
+                  htmlFor="product-document"
+                  className="mb-1.5 block text-sm font-medium text-gray-700"
+                >
+                  Product Document (optional)
+                </label>
+
+                <label
+                  htmlFor="product-document"
+                  className="
+                    flex cursor-pointer items-center gap-3
+                    rounded-lg border border-dashed border-gray-300
+                    bg-gray-50 px-3.5 py-3 text-sm text-gray-600
+                    transition-colors hover:border-blue-400 hover:bg-blue-50/40
+                  "
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                    <FileText size={17} />
+                  </span>
+
+                  <span className="flex flex-col">
+                    <span className="font-medium text-gray-800">
+                      {file ? file.name : "Choose a PDF or image to upload"}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      PDF, JPG or PNG, up to 10MB
+                    </span>
+                  </span>
+                </label>
+
+                <input
+                  id="product-document"
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
               </div>
             </div>
 

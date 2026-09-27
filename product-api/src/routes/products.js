@@ -26,9 +26,9 @@ router.post('/', upload.single('productDocument'), async (req, res) => {
   try {
 
     // upload product doucment to Azure Blob Storage 
-    const blobFileName = `${medicineCode}-${req.file.originalname}`;
     let documentUrl = null;
     if(req.file){
+      const blobFileName = `${medicineCode}-${req.file.originalname}`;
       documentUrl = await uploadFile(
         req.file.buffer,
         blobFileName,

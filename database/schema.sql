@@ -1,10 +1,9 @@
 -- ============================================
 -- Manufacturer-to-Distributor API Database Schema
--- Database: capstonedb (Azure SQL)
+-- Database: md-presentation-db (Azure SQL)
 -- ============================================
 
 -- 1. Manufacturers
--- One row per manufacturer. Rarely changes.
 CREATE TABLE Manufacturers (
     ManufacturerId   VARCHAR(30)  NOT NULL PRIMARY KEY,
     ManufacturerName VARCHAR(150) NOT NULL,
@@ -12,12 +11,12 @@ CREATE TABLE Manufacturers (
 );
 
 -- 2. ProductMaster
--- One row per medicine. Each medicine belongs to exactly one manufacturer.
 CREATE TABLE ProductMaster (
     MedicineCode   VARCHAR(30)  NOT NULL PRIMARY KEY,
     MedicineName   VARCHAR(120) NOT NULL,
     ManufacturerId VARCHAR(30)  NOT NULL,
     Status         VARCHAR(20)  NOT NULL DEFAULT 'ACTIVE',
+    DocumentUrl    VARCHAR(500) NULL,
     CreatedAt      DATETIME2    NOT NULL DEFAULT SYSUTCDATETIME(),
 
     CONSTRAINT FK_Product_Manufacturer
@@ -28,7 +27,6 @@ CREATE TABLE ProductMaster (
 );
 
 -- 3. ShipmentEvents
--- One row per shipment event. Grows continuously — this is your event log.
 CREATE TABLE ShipmentEvents (
     ShipmentId     VARCHAR(30)  NOT NULL PRIMARY KEY,
     MedicineCode   VARCHAR(30)  NOT NULL,
@@ -51,12 +49,10 @@ CREATE TABLE ShipmentEvents (
         CHECK (Status IN ('DISPATCHED', 'CANCELLED'))
 );
 
--- 4. Index to make Inventory API's aggregation query fast
--- Inventory API runs: SUM(Quantity) WHERE MedicineCode = ... constantly.
--- Without this index, that query scans the whole table as it grows.
+-- 4. Index for Inventory API's aggregation query
 CREATE INDEX IX_ShipmentEvents_MedicineCode
     ON ShipmentEvents (MedicineCode);
 
--- 5. Index for querying shipments by manufacturer (used by Shipment API)
+-- 5. Index for querying shipments by manufacturer
 CREATE INDEX IX_ShipmentEvents_ManufacturerId
     ON ShipmentEvents (ManufacturerId);

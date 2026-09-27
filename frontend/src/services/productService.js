@@ -7,7 +7,18 @@ export async function getAllProducts() {
   return response.data;
 }
 
-export async function createProduct(data) {
-  const response = await axios.post(`${BASE_URL}/products`, data);
+export async function createProduct(data, file) {
+  const formData = new FormData();
+  formData.append('medicineCode', data.medicineCode);
+  formData.append('medicineName', data.medicineName);
+  formData.append('manufacturerId', data.manufacturerId);
+
+  if (file) {
+    formData.append('productDocument', file);
+  }
+
+  const response = await axios.post(`${BASE_URL}/products`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return response.data;
 }
