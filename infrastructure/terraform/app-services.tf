@@ -21,7 +21,9 @@ resource "azurerm_linux_web_app" "product" {
 
   https_only = true
 
-  public_network_access_enabled = false
+  # APIM (StandardV2) is not VNet-injected, so it reaches this app over the
+  # public endpoint. We lock that endpoint down to only APIM's outbound IPs.
+  public_network_access_enabled = true
 
   virtual_network_subnet_id = azurerm_subnet.app_integration.id
 
@@ -29,12 +31,27 @@ resource "azurerm_linux_web_app" "product" {
     always_on = true
 
     application_stack {
-      node_version = "20-lts"
+      docker_image_name   = "${var.ghcr_username}/product-api:${var.product_image_tag}"
+      docker_registry_url = "https://ghcr.io"
+
+      docker_registry_username = var.ghcr_username
+      docker_registry_password = var.ghcr_token
+    }
+
+    dynamic "ip_restriction" {
+      for_each = azurerm_api_management.main.public_ip_addresses
+      content {
+        ip_address = "${ip_restriction.value}/32"
+        action      = "Allow"
+        priority    = 100 + index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)
+        name        = "apim-${index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)}"
+      }
     }
   }
 
   app_settings = {
-    NODE_ENV = "production"
+    NODE_ENV      = "production"
+    WEBSITES_PORT = "3001"
   }
 
   tags = local.common_tags
@@ -50,7 +67,7 @@ resource "azurerm_linux_web_app" "shipment" {
 
   https_only = true
 
-  public_network_access_enabled = false
+  public_network_access_enabled = true
 
   virtual_network_subnet_id = azurerm_subnet.app_integration.id
 
@@ -58,12 +75,27 @@ resource "azurerm_linux_web_app" "shipment" {
     always_on = true
 
     application_stack {
-      node_version = "20-lts"
+      docker_image_name   = "${var.ghcr_username}/shipment-api:${var.shipment_image_tag}"
+      docker_registry_url = "https://ghcr.io"
+
+      docker_registry_username = var.ghcr_username
+      docker_registry_password = var.ghcr_token
+    }
+
+    dynamic "ip_restriction" {
+      for_each = azurerm_api_management.main.public_ip_addresses
+      content {
+        ip_address = "${ip_restriction.value}/32"
+        action      = "Allow"
+        priority    = 100 + index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)
+        name        = "apim-${index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)}"
+      }
     }
   }
 
   app_settings = {
-    NODE_ENV = "production"
+    NODE_ENV      = "production"
+    WEBSITES_PORT = "3002"
   }
 
   tags = local.common_tags
@@ -79,7 +111,7 @@ resource "azurerm_linux_web_app" "inventory" {
 
   https_only = true
 
-  public_network_access_enabled = false
+  public_network_access_enabled = true
 
   virtual_network_subnet_id = azurerm_subnet.app_integration.id
 
@@ -87,12 +119,27 @@ resource "azurerm_linux_web_app" "inventory" {
     always_on = true
 
     application_stack {
-      node_version = "20-lts"
+      docker_image_name   = "${var.ghcr_username}/inventory-api:${var.inventory_image_tag}"
+      docker_registry_url = "https://ghcr.io"
+
+      docker_registry_username = var.ghcr_username
+      docker_registry_password = var.ghcr_token
+    }
+
+    dynamic "ip_restriction" {
+      for_each = azurerm_api_management.main.public_ip_addresses
+      content {
+        ip_address = "${ip_restriction.value}/32"
+        action      = "Allow"
+        priority    = 100 + index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)
+        name        = "apim-${index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)}"
+      }
     }
   }
 
   app_settings = {
-    NODE_ENV = "production"
+    NODE_ENV      = "production"
+    WEBSITES_PORT = "3003"
   }
 
   tags = local.common_tags

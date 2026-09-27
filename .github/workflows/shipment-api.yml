@@ -45,3 +45,21 @@ jobs:
       - name: Push Docker image
         run: |
           docker push ghcr.io/ziyasalar/shipment-api:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Restart Web App to pull latest image
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            az webapp restart \
+              --name ${{ vars.SHIPMENT_APP_NAME }} \
+              --resource-group ${{ vars.AZURE_RESOURCE_GROUP }}

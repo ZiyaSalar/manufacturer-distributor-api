@@ -43,3 +43,38 @@ variable "sql_admin_username" {
   type        = string
   sensitive   = true
 }
+
+variable "ghcr_username" {
+  description = "GitHub username that owns the GHCR packages (e.g. ziyasalar)"
+  type        = string
+}
+
+variable "ghcr_token" {
+  description = "GitHub PAT with read:packages scope, used by App Service to pull private GHCR images"
+  type        = string
+  sensitive   = true
+}
+
+variable "product_image_tag" {
+  description = "Tag of the product-api image to deploy"
+  type        = string
+  default     = "latest"
+}
+
+variable "shipment_image_tag" {
+  description = "Tag of the shipment-api image to deploy"
+  type        = string
+  default     = "latest"
+}
+
+variable "inventory_image_tag" {
+  description = "Tag of the inventory-api image to deploy"
+  type        = string
+  default     = "latest"
+}
+
+variable "static_web_app_location" {
+  description = "Region for the Static Web App (only a subset of Azure regions support this service, e.g. West US 2, Central US, East US 2, West Europe, East Asia)"
+  type        = string
+  default     = "westus2"
+}

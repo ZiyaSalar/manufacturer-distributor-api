@@ -67,3 +67,28 @@ output "sql_admin_password" {
   value     = random_password.sql_admin.result
   sensitive = true
 }
+
+output "apim_public_ip_addresses" {
+  value = azurerm_api_management.main.public_ip_addresses
+}
+
+output "frontend_default_hostname" {
+  value = azurerm_static_web_app.frontend.default_host_name
+}
+
+output "frontend_deployment_token" {
+  value     = azurerm_static_web_app.frontend.api_key
+  sensitive = true
+}
+
+output "product_api_gateway_path" {
+  value = "${azurerm_api_management.main.gateway_url}/product"
+}
+
+output "shipment_api_gateway_path" {
+  value = "${azurerm_api_management.main.gateway_url}/shipment"
+}
+
+output "inventory_api_gateway_path" {
+  value = "${azurerm_api_management.main.gateway_url}/inventory"
+}
