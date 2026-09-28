@@ -74,6 +74,8 @@ resource "azurerm_api_management_api" "product" {
   path         = "product"
   protocols    = ["https"]
 
+  service_url = "https://${azurerm_linux_web_app.product.default_hostname}"
+
   subscription_required = false
 }
 
@@ -117,6 +119,8 @@ resource "azurerm_api_management_api" "shipment" {
   path         = "shipment"
   protocols    = ["https"]
 
+  service_url = "https://${azurerm_linux_web_app.shipment.default_hostname}"
+
   subscription_required = false
 }
 
@@ -159,6 +163,8 @@ resource "azurerm_api_management_api" "inventory" {
   display_name = "Inventory API"
   path         = "inventory"
   protocols    = ["https"]
+
+  service_url = "https://${azurerm_linux_web_app.inventory.default_hostname}"
 
   subscription_required = false
 }

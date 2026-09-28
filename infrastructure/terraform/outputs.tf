@@ -59,7 +59,7 @@ output "application_insights_name" {
 }
 
 output "sql_admin_username" {
-  value = var.sql_admin_username
+  value     = var.sql_admin_username
   sensitive = true
 }
 

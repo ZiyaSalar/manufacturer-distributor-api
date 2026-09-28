@@ -42,9 +42,9 @@ resource "azurerm_linux_web_app" "product" {
       for_each = azurerm_api_management.main.public_ip_addresses
       content {
         ip_address = "${ip_restriction.value}/32"
-        action      = "Allow"
-        priority    = 100 + index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)
-        name        = "apim-${index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)}"
+        action     = "Allow"
+        priority   = 100 + index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)
+        name       = "apim-${index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)}"
       }
     }
   }
@@ -86,9 +86,9 @@ resource "azurerm_linux_web_app" "shipment" {
       for_each = azurerm_api_management.main.public_ip_addresses
       content {
         ip_address = "${ip_restriction.value}/32"
-        action      = "Allow"
-        priority    = 100 + index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)
-        name        = "apim-${index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)}"
+        action     = "Allow"
+        priority   = 100 + index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)
+        name       = "apim-${index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)}"
       }
     }
   }
@@ -130,9 +130,9 @@ resource "azurerm_linux_web_app" "inventory" {
       for_each = azurerm_api_management.main.public_ip_addresses
       content {
         ip_address = "${ip_restriction.value}/32"
-        action      = "Allow"
-        priority    = 100 + index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)
-        name        = "apim-${index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)}"
+        action     = "Allow"
+        priority   = 100 + index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)
+        name       = "apim-${index(azurerm_api_management.main.public_ip_addresses, ip_restriction.value)}"
       }
     }
   }
